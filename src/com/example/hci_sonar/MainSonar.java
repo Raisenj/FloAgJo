@@ -40,6 +40,7 @@ public class MainSonar extends Activity {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
+
 			updateGUISanctioned();
 		}
 
