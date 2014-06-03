@@ -1,25 +1,33 @@
 package com.example.hci_sonar;
 
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.media.MediaRecorder;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainSonar extends Activity {
 
-	private static final int RECORDING_TIME = 3;
+	private static final int RECORDING_TIME = 10;
 	private static final int SANCTION_TIME = 10;
 
 	private static final int IDLE = 99;
 	private static final int RECORDING = 98;
 	private static final int SANCTIONED = 97;
+	private static final String AUDIOFILENAME = Environment
+			.getExternalStorageDirectory().getAbsolutePath()
+			+ "/audiorecordtest.mp4";
 
 	private final Handler guiHandler = new Handler();
 
@@ -34,6 +42,8 @@ public class MainSonar extends Activity {
 	private int STATE;
 	private int seconds_recorded;
 	private int seconds_sanction;
+
+	private MediaRecorder mRecorder = null;
 
 	private Runnable changeGUIToSanction = new Runnable() {
 
@@ -123,6 +133,15 @@ public class MainSonar extends Activity {
 		this.timer_recording = null;
 		this.timer_sanction = new Timer(true);
 		this.timer_sanction.schedule(new SanctionCounterTask(), 1000, 1000);
+		stopRecordingAudio();
+	}
+
+	private void stopRecordingAudio() {
+		// TODO Auto-generated method stub
+		this.mRecorder.stop();
+		this.mRecorder.release();
+		this.mRecorder = null;
+
 	}
 
 	private void updateGUISanctioned() {
@@ -171,6 +190,36 @@ public class MainSonar extends Activity {
 		this.updateGUIRecording();
 		this.timer_recording = new Timer(true);
 		this.timer_recording.schedule(new RecordingCounterTask(), 1000, 1000);
+		startRecordingAudio();
+	}
+
+	private void startRecordingAudio() {
+		// TODO Auto-generated method stub
+		Toast t1 = Toast.makeText(getApplicationContext(), "1",
+				Toast.LENGTH_SHORT);
+		Toast t2 = Toast.makeText(getApplicationContext(), "2",
+				Toast.LENGTH_SHORT);
+		Toast t3 = Toast.makeText(getApplicationContext(), "3",
+				Toast.LENGTH_SHORT);
+		t1.show();
+		mRecorder = new MediaRecorder();
+		t2.show();
+		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+		t3.show();
+		mRecorder.setOutputFile(AUDIOFILENAME);
+		mRecorder.setAudioSamplingRate(44100);
+		mRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
+		mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+		mRecorder.setMaxFileSize(0);
+
+		try {
+			mRecorder.prepare();
+		} catch (IOException e) {
+			Log.e("HCI", "prepare() failed");
+		}
+
+		mRecorder.start();
+		// com.example.hci_sonar.PatterDetection.hasPattern("10010010");
 	}
 
 	private void initVariables() {
