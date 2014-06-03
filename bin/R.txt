@@ -239,6 +239,9 @@ int drawable buttonshape 0x7f020058
 int drawable buttonshapeactive 0x7f020059
 int drawable ic_launcher 0x7f02005a
 int id Brecord 0x7f05003d
+int id TVInfoSanction 0x7f05003f
+int id TVRecording 0x7f05003e
+int id TVSecondsToNextRecording 0x7f050040
 int id action_bar 0x7f05001c
 int id action_bar_activity_content 0x7f050015
 int id action_bar_container 0x7f05001b
@@ -250,7 +253,7 @@ int id action_context_bar 0x7f05001d
 int id action_menu_divider 0x7f050016
 int id action_menu_presenter 0x7f050017
 int id action_mode_close_button 0x7f050024
-int id action_settings 0x7f05003e
+int id action_settings 0x7f050041
 int id activity_chooser_view_content 0x7f050025
 int id always 0x7f05000b
 int id beginning 0x7f050011
@@ -346,6 +349,9 @@ int string abc_shareactionprovider_share_with_application 0x7f0a000b
 int string action_settings 0x7f0a000f
 int string app_name 0x7f0a000d
 int string hello_world 0x7f0a000e
+int string infosanction 0x7f0a0012
+int string record 0x7f0a0011
+int string recording 0x7f0a0010
 int style AppBaseTheme 0x7f0b008b
 int style AppTheme 0x7f0b008c
 int style TextAppearance_AppCompat_Base_CompactMenu_Dialog 0x7f0b0063

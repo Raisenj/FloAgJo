@@ -10,14 +10,47 @@
     tools:context="com.example.hci_sonar.MainActivity$PlaceholderFragment" >
 	
     <Button
-		android:id="@+id/Brecord"
-		android:text="RECORD"
-		android:textColor="#FFFFFF"
-		android:textSize="20sp"
-		android:layout_width="180dp"
-		android:layout_height="90dp"
-		android:layout_centerVertical="true"
-		android:layout_centerHorizontal="true"
-		android:background="@drawable/buttonshape"
-	/>
+        android:id="@+id/Brecord"
+        android:layout_width="180dp"
+        android:layout_height="90dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/buttonshape"
+        android:text="@string/record"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/TVRecording"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/Brecord"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="87dp"
+        android:textColor="#df0505"
+        android:textStyle="bold"
+        android:text="@string/recording" />
+
+    <TextView
+        android:id="@+id/TVInfoSanction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Brecord"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="90dp"
+        android:textColor="#df0505"
+        android:textStyle="bold"
+        android:text="@string/infosanction" />
+
+    <TextView
+        android:id="@+id/TVSecondsToNextRecording"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TVInfoSanction"
+        android:layout_centerHorizontal="true"
+        android:textColor="#df0505"
+        android:textStyle="bold"
+        android:text="0"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
 </RelativeLayout>
