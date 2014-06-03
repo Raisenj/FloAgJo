@@ -237,8 +237,10 @@ int drawable abc_textfield_searchview_right_holo_light 0x7f020056
 int drawable background 0x7f020057
 int drawable buttonshape 0x7f020058
 int drawable buttonshapeactive 0x7f020059
-int drawable ic_launcher 0x7f02005a
+int drawable buttonshapedisabled 0x7f02005a
+int drawable ic_launcher 0x7f02005b
 int id Brecord 0x7f05003d
+int id TVCounterRecording 0x7f050041
 int id TVInfoSanction 0x7f05003f
 int id TVRecording 0x7f05003e
 int id TVSecondsToNextRecording 0x7f050040
@@ -253,7 +255,7 @@ int id action_context_bar 0x7f05001d
 int id action_menu_divider 0x7f050016
 int id action_menu_presenter 0x7f050017
 int id action_mode_close_button 0x7f050024
-int id action_settings 0x7f050041
+int id action_settings 0x7f050042
 int id activity_chooser_view_content 0x7f050025
 int id always 0x7f05000b
 int id beginning 0x7f050011
