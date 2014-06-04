@@ -8,12 +8,23 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.apache.commons.io.FileUtils;
+import org.kobjects.base64.Base64;
+import org.ksoap2.SoapEnvelope;
+import org.ksoap2.serialization.PropertyInfo;
+import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapPrimitive;
+import org.ksoap2.serialization.SoapSerializationEnvelope;
+import org.ksoap2.transport.HttpTransportSE;
+import org.xmlpull.v1.XmlPullParserException;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -66,6 +77,13 @@ public class MainSonar extends Activity {
 	private Thread processSignalT = null;
 
 	private ProgressDialog processingSignal;
+
+	public final static String URL = "http://147.83.200.117:8080/HCI_DetectSonar/services/SonarDetection?wsdl";
+	public static final String NAMESPACE = "http://detect.hci";
+	public static final String SOAP_ACTION_PREFIX = "/";
+	private static final String METHOD = "checkForPattern";
+
+	private AsyncTaskRunner runner;
 
 	private Runnable changeGUIToSanction = new Runnable() {
 
@@ -230,6 +248,18 @@ public class MainSonar extends Activity {
 
 		// return (file.getAbsolutePath() + "/" + System.currentTimeMillis() +
 		// AUDIO_RECORDER_FILE_EXT_WAV);
+		Log.d("AAAAAAAA", file.getAbsolutePath() + "/" + "Output"
+				+ AUDIO_RECORDER_FILE_EXT_WAV);
+		Log.d("AAAAAAAA", file.getAbsolutePath() + "/" + "Output"
+				+ AUDIO_RECORDER_FILE_EXT_WAV);
+		Log.d("AAAAAAAA", file.getAbsolutePath() + "/" + "Output"
+				+ AUDIO_RECORDER_FILE_EXT_WAV);
+		Log.d("AAAAAAAA", file.getAbsolutePath() + "/" + "Output"
+				+ AUDIO_RECORDER_FILE_EXT_WAV);
+		Log.d("AAAAAAAA", file.getAbsolutePath() + "/" + "Output"
+				+ AUDIO_RECORDER_FILE_EXT_WAV);
+		Log.d("AAAAAAAA", file.getAbsolutePath() + "/" + "Output"
+				+ AUDIO_RECORDER_FILE_EXT_WAV);
 		return (file.getAbsolutePath() + "/" + "Output" + AUDIO_RECORDER_FILE_EXT_WAV);
 	}
 
@@ -349,8 +379,10 @@ public class MainSonar extends Activity {
 		processingSignal = ProgressDialog.show(MainSonar.this,
 				"Processing Signal", "analizing...");
 
-		processSignalT = new Thread(processSignalR);
-		processSignalT.start();
+		// processSignalT = new Thread(processSignalR);
+		// processSignalT.start();
+		runner = new AsyncTaskRunner();
+		runner.execute();
 	}
 
 	private void updateGUISanctioned() {
@@ -541,4 +573,98 @@ public class MainSonar extends Activity {
 		}
 	};
 
+	private class AsyncTaskRunner extends AsyncTask<String, String, String> {
+
+		private String resp;
+
+		@Override
+		protected String doInBackground(String... params) {
+			publishProgress("Loading contents..."); // Calls onProgressUpdate()
+			try {
+				// SoapEnvelop.VER11 is SOAP Version 1.1 constant
+				SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(
+						SoapEnvelope.VER11);
+				SoapObject request = new SoapObject(NAMESPACE, METHOD);
+				// bodyOut is the body object to be sent out with this envelope
+				File sdcard = Environment.getExternalStorageDirectory();
+				File file = new File(getFilename());
+				// File file = new File(sdcard, "Audiotesten1.wav");
+
+				byte[] bytes = FileUtils.readFileToByteArray(file);
+
+				String encoded = Base64.encode(bytes);// .encode(bytes);//.encodeBase64String(bytes);
+
+				PropertyInfo pa = new PropertyInfo();
+				pa.setName("a");
+				pa.setValue(encoded);
+				request.addProperty(pa);
+
+				envelope.bodyOut = request;
+				HttpTransportSE transport = new HttpTransportSE(URL);
+				try {
+					transport.call(NAMESPACE + SOAP_ACTION_PREFIX + METHOD,
+							envelope);
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (XmlPullParserException e) {
+					e.printStackTrace();
+				}
+				// bodyIn is the body object received with this envelope
+				if (envelope.bodyIn != null) {
+					// getProperty() Returns a specific property at a certain
+					// index.
+					SoapPrimitive resultSOAP = (SoapPrimitive) ((SoapObject) envelope.bodyIn)
+							.getProperty(0);
+					resp = resultSOAP.toString();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				resp = e.getMessage();
+			}
+			return resp;
+		}
+
+		/**
+		 * 
+		 * @see android.os.AsyncTask#onPostExecute(java.lang.Object)
+		 */
+		@Override
+		protected void onPostExecute(String result) {
+			// execution of result of Long time consuming operation
+			// In this example it is the return value from the web service
+			// textView.setText(result);
+			processingSignal.dismiss();
+			processingSignal.cancel();
+			processingSignal = null;
+			if (result == null) {
+				guiHandler.post(showFail);
+			} else if (result.equalsIgnoreCase("wrong pattern")) {
+				guiHandler.post(showFail);
+			} else if (result.equalsIgnoreCase("right pattern")) {
+				guiHandler.post(showBonus);
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * @see android.os.AsyncTask#onPreExecute()
+	 */
+	protected void onPreExecute() {
+		// Things to be done before execution of long running operation. For
+		// example showing ProgessDialog
+		processingSignal = ProgressDialog.show(MainSonar.this,
+				"Processing Signal", "analizing...");
+
+	}
+
+	/**
+	 * 
+	 * @see android.os.AsyncTask#onProgressUpdate(Progress[])
+	 */
+	protected void onProgressUpdate(String... text) {
+		// textView.setText(text[0]);
+		// Things to be done while execution of long running operation is in
+		// progress. For example updating ProgessDialog
+	}
 }

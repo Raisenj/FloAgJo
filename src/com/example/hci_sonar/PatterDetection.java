@@ -1,9 +1,9 @@
 package com.example.hci_sonar;
 
+import java.io.File;
 import java.util.ArrayList;
 
-import android.util.Log;
-import be.hogent.tarsos.dsp.MicrophoneAudioDispatcher;
+import be.hogent.tarsos.dsp.AudioEvent;
 import be.hogent.tarsos.dsp.filters.HighPass;
 import be.hogent.tarsos.dsp.pitch.Goertzel;
 import be.hogent.tarsos.dsp.pitch.Goertzel.FrequenciesDetectedHandler;
@@ -11,20 +11,14 @@ import be.hogent.tarsos.dsp.pitch.PitchDetectionResult;
 
 public class PatterDetection {
 
-	public static boolean hasPattern(String pattern) {
+	public boolean hasPattern(File inputFile, String pattern) {
 
-		Log.d("HCI-EEEEEE", "\n eieieieieiei");
-		// my testfile
-		// File file = new File("/home/florian/workspace/Sonar/signal3.wav"); //
-		// expected
-		// System.out.println(AudioSystem.getAudioFileTypes().);
-		// AudioInputStream inputStream =
-		// AudioSystem.getAudioInputStream(inputFile);
-		MicrophoneAudioDispatcher dispatcher = new MicrophoneAudioDispatcher(
-				44100, 2048, 1024);
+		PitchProcessor pp;
+
+		AudioEvent ae = new AudioEvent(null, 0);
 
 		// here i cut away the frequencies below 18000 Hz
-		dispatcher.addAudioProcessor(new HighPass(18000, 44100));
+		HighPass hp = new HighPass(18000, 44100);
 
 		// this line can be deleted, i just store the result after I have cut
 		// away the frequencies
@@ -38,8 +32,7 @@ public class PatterDetection {
 		final ArrayList<Boolean> results = new ArrayList<Boolean>();
 
 		// Here the Goertzel object is added to the dispatcher
-
-		dispatcher.addAudioProcessor(new Goertzel(44100, 2048, frequencies,
+		Goertzel g = new Goertzel(44100, 2048, frequencies,
 				new FrequenciesDetectedHandler() {
 					@Override
 					public void handleDetectedFrequencies(
@@ -48,20 +41,13 @@ public class PatterDetection {
 							final double allPowers[]) {
 
 						for (double a : frequencies) {
-							// System.out.print(a + " ");
+							System.out.print(a + " ");
 							results.add(true);
 						}
-						Log.d("HCI-EEEEEE", "\n" + results.size());
+						System.out.println("\n " + results.size());
 
 					}
-				}));
-		PitchProcessor pitch = new PitchProcessor(44100, 2048);
-		dispatcher.addAudioProcessor(pitch);
-		(new Thread(dispatcher)).start();
-
-		if (pattern.equals(createCode(pitch.getResults()))) {
-			return true;
-		}
+				});
 
 		return false;
 
@@ -84,6 +70,7 @@ public class PatterDetection {
 				}
 			}
 		}
+		System.out.println(output);
 		return output;
 	}
 
