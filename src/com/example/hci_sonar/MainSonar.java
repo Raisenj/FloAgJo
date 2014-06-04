@@ -9,6 +9,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -19,6 +21,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -32,8 +35,8 @@ public class MainSonar extends Activity {
 	private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
 	private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
 
-	private static final int RECORDING_TIME = 10;
-	private static final int SANCTION_TIME = 10;
+	private static final int RECORDING_TIME = 5;
+	private static final int SANCTION_TIME = 20;
 
 	private static final int IDLE = 99;
 	private static final int RECORDING = 98;
@@ -60,6 +63,9 @@ public class MainSonar extends Activity {
 	private AudioRecord recorder;
 	private int bufferSize = 0;
 	private Thread recordingThread = null;
+	private Thread processSignalT = null;
+
+	private ProgressDialog processingSignal;
 
 	private Runnable changeGUIToSanction = new Runnable() {
 
@@ -72,6 +78,67 @@ public class MainSonar extends Activity {
 
 	};
 
+	private Runnable showBonus = new Runnable() {
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			Dialog bonusDialog = new Dialog(MainSonar.this);
+			bonusDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+			bonusDialog.setContentView(getLayoutInflater().inflate(
+					R.layout.bonus_layout, null));
+			bonusDialog.setCancelable(true);
+			bonusDialog.show();
+		}
+
+	};
+
+	private Runnable showFail = new Runnable() {
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			Dialog bonusDialog = new Dialog(MainSonar.this);
+			bonusDialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+			bonusDialog.setContentView(getLayoutInflater().inflate(
+					R.layout.fail_layout, null));
+			bonusDialog.setCancelable(true);
+			bonusDialog.show();
+		}
+
+	};
+
+	private Runnable processSignalR = new Runnable() {
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			boolean patternFound = false;
+			patternFound = searchForPattern();
+			processingSignal.dismiss();
+			processingSignal.cancel();
+			processingSignal = null;
+			if (patternFound) {
+				guiHandler.post(showBonus);
+
+			} else {
+				guiHandler.post(showFail);
+			}
+
+		}
+
+		private boolean searchForPattern() {
+			// TODO Auto-generated method stub
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return false;
+		}
+	};
+
 	private Runnable backToIdle = new Runnable() {
 
 		@Override
@@ -82,7 +149,7 @@ public class MainSonar extends Activity {
 
 	};
 
-	final Runnable decreaseCounter = new Runnable() {
+	private Runnable decreaseCounter = new Runnable() {
 
 		@Override
 		public void run() {
@@ -277,7 +344,13 @@ public class MainSonar extends Activity {
 		this.timer_sanction = new Timer(true);
 		this.timer_sanction.schedule(new SanctionCounterTask(), 1000, 1000);
 		// stopRecordingAudio();
+
 		stopRecordingAudio2();
+		processingSignal = ProgressDialog.show(MainSonar.this,
+				"Processing Signal", "analizing...");
+
+		processSignalT = new Thread(processSignalR);
+		processSignalT.start();
 	}
 
 	private void updateGUISanctioned() {

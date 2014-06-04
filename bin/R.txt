@@ -239,6 +239,8 @@ int drawable buttonshape 0x7f020058
 int drawable buttonshapeactive 0x7f020059
 int drawable buttonshapedisabled 0x7f02005a
 int drawable ic_launcher 0x7f02005b
+int drawable notpass 0x7f02005c
+int drawable pass 0x7f02005d
 int id Brecord 0x7f05003d
 int id TVCounterRecording 0x7f050041
 int id TVInfoSanction 0x7f05003f
@@ -332,8 +334,10 @@ int layout abc_search_dropdown_item_icons_2line 0x7f030015
 int layout abc_search_view 0x7f030016
 int layout abc_simple_decor 0x7f030017
 int layout activity_main 0x7f030018
-int layout fragment_main 0x7f030019
-int layout support_simple_spinner_dropdown_item 0x7f03001a
+int layout bonus_layout 0x7f030019
+int layout fail_layout 0x7f03001a
+int layout fragment_main 0x7f03001b
+int layout support_simple_spinner_dropdown_item 0x7f03001c
 int menu main 0x7f0c0000
 int string abc_action_bar_home_description 0x7f0a0001
 int string abc_action_bar_up_description 0x7f0a0002
